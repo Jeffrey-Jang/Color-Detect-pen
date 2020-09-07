@@ -1,7 +1,7 @@
 # Color-Detect-pen
 Just for backup.
 
-My University Project.
+It was my University Project.
 * Pen & LCD Paint
 
 [![Color-Detect-pen](http://img.youtube.com/vi/FP1_mXP3oYw/0.jpg)](http://www.youtube.com/watch?v=FP1_mXP3oYw "Color Sensor Pen with 2.8" touch LCD")
