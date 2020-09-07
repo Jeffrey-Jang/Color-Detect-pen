@@ -1,0 +1,637 @@
+
+#include "mTFT.h"
+#include <math.h>
+#use delay(clock=20000000)
+//==============================================================================
+// make WriteSPI
+//==============================================================================
+
+signed char WriteSPI( unsigned char data_out )
+{
+  unsigned char TempVar;  
+  TempVar = SSPBUF;           // Clears BF
+  SSPIF = 0;                  // Clear interrupt flag
+  WCOL = 0;                   //Clear any previous write collision
+  SSPBUF = data_out;           // write byte to SSPBUF register
+  if ( SSPCON1 & 0x80 )        // test if write collision occurred
+   return ( -1 );              // if WCOL bit is set return negative #
+  else
+    while( !SSPIF );             // wait until bus cycle complete  
+   return 0 ;                // if WCOL bit is not set return non-negative#
+}
+//==============================================================================
+// Initializes the TFT module.
+//==============================================================================
+void TFT_Init(void)
+{
+   TRIS_CS = 0; TRIS_DC = 0; TRIS_RES = 0;
+   TFT_CS = 1; TFT_DC = 0; TFT_RES = 0;
+   TFT_Reset();
+   TFT_WriteCommand(0xCB);   // Power control A (CBh)
+   TFT_WriteParameter(0x39); 
+   TFT_WriteParameter(0x2C); 
+   TFT_WriteParameter(0x00); 
+   TFT_WriteParameter(0x34); 
+   TFT_WriteParameter(0x02); 
+   
+   TFT_WriteCommand(0xCF);   // Power control B (CFh)
+   TFT_WriteParameter(0x00); 
+   TFT_WriteParameter(0XC1); 
+   TFT_WriteParameter(0X30); 
+   
+   TFT_WriteCommand(0xE8);   // Driver timing control A (E8h)  
+   TFT_WriteParameter(0x85); 
+   TFT_WriteParameter(0x00); 
+   TFT_WriteParameter(0x78); 
+   
+   TFT_WriteCommand(0xEA);   // Driver timing control B (EAh)  
+   TFT_WriteParameter(0x00); 
+   TFT_WriteParameter(0x00); 
+   
+   TFT_WriteCommand(0xED);   // Power on sequence control (EDh) 
+   TFT_WriteParameter(0x64); 
+   TFT_WriteParameter(0x03); 
+   TFT_WriteParameter(0X12); 
+   TFT_WriteParameter(0X81); 
+   
+   TFT_WriteCommand(0xF7);   // Pump ratio control (F7h)
+   TFT_WriteParameter(0x20); 
+   
+   TFT_WriteCommand(0xC0);   // Power Control 1 (C0h) 
+   TFT_WriteParameter(0x23); // VRH[5:0] 
+   
+   TFT_WriteCommand(0xC1);   // Power Control 2 (C1h)
+   TFT_WriteParameter(0x10); // SAP[2:0]; BT[3:0] 
+   
+   TFT_WriteCommand(0xC5);   // Set the VCOMH voltage. 
+   TFT_WriteParameter(0x3E);
+   TFT_WriteParameter(0x28); 
+   
+   TFT_WriteCommand(0xC7);   // VCOM Control 2(C7h)
+   TFT_WriteParameter(0x86);  
+   
+   TFT_WriteCommand(0x36);   // Memory Access Control (36h)
+   //TFT_WriteParameter(0x48);   // Memory Access Control (36h)
+   TFT_WriteParameter(0b10001000); 
+   
+   TFT_WriteCommand(0x3A);   // COLMOD: Pixel Format Set (3Ah)    
+   TFT_WriteParameter(0x55); 
+   
+   TFT_WriteCommand(0xB1);   // Frame Rate Control (In Normal Mode/Full Colors) (B1h)  
+   TFT_WriteParameter(0x00);  
+   TFT_WriteParameter(0x18); 
+   
+   TFT_WriteCommand(0xB6);   // Display Function Control (B6h) 
+   TFT_WriteParameter(0x08); 
+   TFT_WriteParameter(0x82);
+   TFT_WriteParameter(0x27);  
+   
+   TFT_WriteCommand(0xF2);   // Enable 3G (F2h)
+   TFT_WriteParameter(0x00); 
+   
+   TFT_WriteCommand(0x26);   // Gamma Set (26h)
+   TFT_WriteParameter(0x01); 
+   
+   TFT_WriteCommand(0xE0);   //Positive Gamma Correction (E0h)
+   TFT_WriteParameter(0x0F); 
+   TFT_WriteParameter(0x31); 
+   TFT_WriteParameter(0x2B); 
+   TFT_WriteParameter(0x0C); 
+   TFT_WriteParameter(0x0E); 
+   TFT_WriteParameter(0x08); 
+   TFT_WriteParameter(0x4E); 
+   TFT_WriteParameter(0xF1); 
+   TFT_WriteParameter(0x37); 
+   TFT_WriteParameter(0x07); 
+   TFT_WriteParameter(0x10); 
+   TFT_WriteParameter(0x03); 
+   TFT_WriteParameter(0x0E); 
+   TFT_WriteParameter(0x09); 
+   TFT_WriteParameter(0x00); 
+   
+   TFT_WriteCommand(0XE1);   // Negative Gamma Correction (E1h)
+   TFT_WriteParameter(0x00); 
+   TFT_WriteParameter(0x0E); 
+   TFT_WriteParameter(0x14); 
+   TFT_WriteParameter(0x03); 
+   TFT_WriteParameter(0x11); 
+   TFT_WriteParameter(0x07); 
+   TFT_WriteParameter(0x31); 
+   TFT_WriteParameter(0xC1); 
+   TFT_WriteParameter(0x48); 
+   TFT_WriteParameter(0x08); 
+   TFT_WriteParameter(0x0F); 
+   TFT_WriteParameter(0x0C); 
+   TFT_WriteParameter(0x31); 
+   TFT_WriteParameter(0x36); 
+   TFT_WriteParameter(0x0F); 
+   
+   TFT_WriteCommand(0x11);    //Exit Sleep
+   TFT_Delay(); TFT_Delay(); TFT_Delay(); // Delay of 150ms
+   TFT_WriteCommand(0x29);   // Display ON (29h)
+   TFT_FillScreen(WHITE);
+}
+
+
+//==============================================================================
+// Resets the TFT module.
+//==============================================================================
+void TFT_Reset(void)
+{
+   TS_CS=1;
+   TFT_CS = 1;        
+   TFT_RES = 0; TFT_Delay();
+   TFT_RES = 1; TFT_Delay(); TFT_Delay(); TFT_Delay();
+}
+//==============================================================================
+// Delay for the TFT module.
+//==============================================================================
+void TFT_Delay(void)
+{
+   Unsigned int i;
+   for(i = 0; i < 50; i++){
+      delay_ms(1);
+   }
+}
+
+//==============================================================================
+// Writes command.
+//==============================================================================
+void TFT_WriteCommand(Unsigned char command)
+{
+   TS_CS=1;
+   TFT_CS = 0;
+   TFT_DC = 0;   //When DCX = ?? command is selected.
+   while(WriteSPI(command));
+   TFT_CS = 1;
+}
+
+//==============================================================================
+// Writes Parameter.
+//==============================================================================
+void TFT_WriteParameter(Unsigned char parameter)
+{
+   TS_CS=1;
+   TFT_CS = 0;
+   TFT_DC = 1;  //When DCX = ?? data is selected.
+   while(WriteSPI(parameter));
+   TFT_CS = 1;
+}
+
+//==============================================================================
+// Fills screen with given color. 
+// color: color parameter.
+//==============================================================================
+void TFT_FillScreen(Unsigned long color)
+{
+   Unsigned char DH, DL;
+   Unsigned int16 i, j;
+   DH = color >> 8;
+   DL = color & 0xFF;
+   TFT_ColumnPage(0, TFT_W - 1, 0, TFT_H - 1);
+   for(i = 0; i < TFT_W; i++)
+   {
+      for (j = 0; j < TFT_H; j++)
+      {
+         TFT_WriteParameter(DH);
+         TFT_WriteParameter(DL);
+      }
+   }
+}
+
+
+
+//==============================================================================
+// Define area of frame memory where MCU can access.
+// x: Set column address. 
+// y: Set Page address.
+//==============================================================================
+void TFT_ColumnRow(Unsigned int16 x, Unsigned int16 y)
+{
+   TFT_WriteCommand(0x2A);
+   TFT_WriteParameter(x >> 8);
+   TFT_WriteParameter(x & 0xFF);
+   TFT_WriteParameter(x >> 8);
+   TFT_WriteParameter(x & 0xFF);
+   TFT_WriteCommand(0x2B);
+   TFT_WriteParameter(y >> 8);
+   TFT_WriteParameter(y & 0xFF);
+   TFT_WriteParameter(y >> 8);
+   TFT_WriteParameter(y & 0xFF);
+   
+   TFT_WriteCommand(0x2C);       // Enable Memory Write
+}
+
+
+//==============================================================================
+// Define area of frame memory where MCU can access.
+// x1: Set start column address. 
+// x2: Set end column address. 
+// y1: Set start page address.
+// y2: Set end page address.
+//==============================================================================
+void TFT_ColumnPage(Unsigned int16 x1, Unsigned int16 x2, Unsigned int16 y1, Unsigned int16 y2)
+{
+   TFT_WriteCommand(0x2A);
+   TFT_WriteParameter(x1 >> 8);
+   TFT_WriteParameter(x1 & 0xFF);
+   TFT_WriteParameter(x2 >> 8);
+   TFT_WriteParameter(x2 & 0xFF);
+   TFT_WriteCommand(0x2B);
+   TFT_WriteParameter(y1 >> 8);
+   TFT_WriteParameter(y1 & 0xFF);
+   TFT_WriteParameter(y2 >> 8);
+   TFT_WriteParameter(y2 & 0xFF);
+   
+   TFT_WriteCommand(0x2C);       // Enable Memory Write
+}
+
+//==============================================================================
+// RGBConvert(red, green, blue).
+// 16 bit/pixel color order (R:5-bit, G:6-bit, B:5-bit), 65,536 colors.
+// 8-8-8 to to 5-6-5 conversion.
+//==============================================================================
+unsigned int16 TFT_RGBConvert(Unsigned int16 red8, Unsigned int16 green8, Unsigned int16 blue8)
+{
+   Unsigned int16 color = 0;
+   red8 = (red8 & 0x1F) << 11; 
+   green8 = (green8 & 0x3F) << 5; 
+   blue8 = blue8 & 0x1F;
+   color = red8 | green8 | blue8;
+   return color;
+}
+
+//==============================================================================
+// Draws a Pixel on TFT.
+// x: x position. Valid values: 0..240 
+// y: y position. Valid values: 0..320 
+// color: color parameter.
+//==============================================================================
+void TFT_Pixel(Unsigned int16 x, Unsigned int16 y, Unsigned int16 color)
+{
+   TFT_ColumnRow(x, y);
+   TFT_WriteParameter(color >> 8);
+   TFT_WriteParameter(color & 0xFF);
+}
+
+
+//==============================================================================
+// Draws a box on TFT.
+// x1: x coordinate of the upper left rectangle corner. Valid values: 0..240  
+// y1: y coordinate of the upper left rectangle corner. Valid values: 0..320 
+// x2: x coordinate of the lower right rectangle corner. Valid values: 0..240 
+// y2: y coordinate of the lower right rectangle corner. Valid values: 0..320 
+// color: color parameter. 
+//==============================================================================
+void TFT_Box(Unsigned int16 x1, Unsigned int16 y1, Unsigned int16 x2, Unsigned int16 y2, Unsigned int16 color)
+{
+/*   while(y1<=y2)
+   {
+      TFT_Line(x1, y1, x2, y1, color);
+      y1++;
+   }*/
+   Unsigned char DH, DL;
+   Unsigned int16 i, j;
+   Unsigned int16 Box_W,Box_H;
+   Box_W = x2;
+   Box_H = y2; 
+   DH = color >> 8;
+   DL = color & 0xFF;
+   TFT_ColumnPage(x1, x2, y1, y2);
+   for(i = 0; i < Box_W; i++)
+   {
+    for (j = 0; j < Box_H; j++)
+        {
+            TFT_WriteParameter(DH);
+            TFT_WriteParameter(DL); 
+        }
+   }
+}
+
+
+//==============================================================================
+// Drawing a Line on TFT.
+//
+// Bresenham algorithm.
+// 
+// x1: x coordinate of the line start. Valid values: 0..240
+// y1: y coordinate of the line start. Valid values: 0..320 
+// x2: x coordinate of the line end. Valid values: 0..240 
+// y2: y coordinate of the line end. Valid values: 0..320 
+// color: color parameter.
+//==============================================================================
+void TFT_Line(Unsigned int16 x1, Unsigned int16 y1, Unsigned int16 x2, Unsigned int16 y2, Unsigned int16 color)
+{
+   int16 i;
+   int16 longest, shortest; 
+   int16 numerator;
+   int16 w = x2 - x1;
+   int16 h = y2 - y1;
+   int16 dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+   
+   if(w < 0) dx1 = -1; else if(w > 0) dx1 = 1;
+   if(h < 0) dy1 = -1; else if(h > 0) dy1 = 1;
+   if(w < 0) dx2 = -1; else if(w > 0) dx2 = 1;
+   if(w < 0) w *= -1;
+   if(h < 0) h *= -1;
+   longest = w; 
+   shortest = h;
+   if(!(longest > shortest)) 
+   {//if(w < 0) w *= -1; //if(h < 0) h *= -1; 
+      longest = h; 
+      shortest = w;
+      if(h < 0) dy2 = -1; else if(h > 0) dy2 = 1;
+      dx2 = 0;         
+   }
+   numerator = longest >> 1;
+   for (i = 0; i <= longest; i++)
+   {
+      TFT_Pixel(x1, y1, color);
+      numerator += shortest;
+      if(!(numerator < longest)) 
+      {
+         numerator -= longest;
+         x1 += dx1;
+         y1 += dy1;
+      }else
+      {
+         x1 += dx2;
+         y1 += dy2;
+      }
+   }
+}
+
+//==============================================================================
+// Draws a rectangle on TFT.
+// x1: x coordinate of the upper left rectangle corner. Valid values: 0..240  
+// y1: y coordinate of the upper left rectangle corner. Valid values: 0..320 
+// x2: x coordinate of the lower right rectangle corner. Valid values: 0..240 
+// y2: y coordinate of the lower right rectangle corner. Valid values: 0..320 
+// color: color parameter.
+//==============================================================================
+void TFT_Rectangle(Unsigned int16 x1, Unsigned int16 y1, Unsigned int16 x2, Unsigned int16 y2, Unsigned int16 color)
+{
+   TFT_Line(x1, y1, x2, y1, color);
+   TFT_Line(x1, y2, x2, y2, color);
+   TFT_Line(x1, y1, x1, y2, color);
+   TFT_Line(x2, y1, x2, y2, color);
+}
+
+//==============================================================================
+// Draws a circle on TFT.
+//
+// Midpoint circle algorithm.
+//
+// SX: x coordinate of the circle center. Valid values: 0..240
+// SY: y coordinate of the circle center. Valid values: 0..320
+// radius: radius size
+// color: color parameter.
+//==============================================================================
+void TFT_Circle(unsigned int16 SX, unsigned int16 SY, unsigned int16 Radius,unsigned int16 Fill, unsigned int16 Color)
+{
+
+   unsigned int16 x,y;
+   int16 delta,tmp;
+   x = 0;
+   y = Radius;
+   delta = 3 - (Radius << 1);
+
+   while(y >= x)
+   {
+      if(Fill)
+      {
+         TFT_Line(SX-x, SY+y, SX+x, SY+y, color);
+         TFT_Line(SX-x, SY-y, SX+x, SY-y, color);
+         TFT_Line(SX-y, SY+x, SX+y, SY+x, color);
+         TFT_Line(SX-y, SY-x, SX+y, SY-x, color);
+      }
+      else
+      {
+         TFT_Pixel(SX + x, SY + y, Color);
+         TFT_Pixel(SX - x, SY + y, Color);
+         TFT_Pixel(SX + x, SY - y, Color);
+         TFT_Pixel(SX - x, SY - y, Color);
+         TFT_Pixel(SX + y, SY + x, Color);
+         TFT_Pixel(SX - y, SY + x, Color);
+         TFT_Pixel(SX + y, SY - x, Color);
+         TFT_Pixel(SX - y, SY - x, Color);
+      }
+      x++;
+      if(delta >= 0)
+      {
+         y=sqrt(Radius*Radius - x*x);
+         tmp = (x << 2);
+         tmp -= (y << 2);
+         delta += (tmp + 10);
+      }
+      else
+      {
+         delta += ((x << 2) + 6);
+      }
+   }
+}
+
+
+//==============================================================================
+// Drawing to TEST
+//==============================================================================
+void test_drawing(void)
+{
+   TFT_FillScreen(RED);
+   TFT_FillScreen(GREEN);
+   TFT_FillScreen(YELLOW);
+   delay_ms(2000);
+   TFT_Box(2, 10, 50, 30, BLACK); 
+   delay_ms(500);
+   TFT_Line(100, 100, 200, 200, RED); 
+   delay_ms(500);
+   TFT_Circle(100, 100, 50,0, BLUE);
+   delay_ms(500);
+   TFT_Circle(150, 200, 30,1, GREEN);
+   delay_ms(500);
+   TFT_Rectangle(2, 250, 150, 300, BROWN);
+   delay_ms(1000);
+}
+
+//==============================================================================
+// Touch Pad init
+//==============================================================================
+void touch_init(void)
+{
+   TRIS_Yp = 0;
+   TRIS_Xp = 0;
+   TRIS_Ym = 0;
+   TRIS_Xm = 0;
+   TRIS_TS_CS = 0;
+   TS_CS=1;
+}
+//==============================================================================
+// Read MCP ch0 (X val)
+//==============================================================================
+int16 Read_X(void)
+{
+   int16 temp;
+   TRIS_Xp=0; TRIS_Xm=0;
+   Xp=1;      Xm=0;
+   
+   TFT_CS=1;
+   TS_CS = 0;
+   
+   SSPBUF = 0x01;
+   while(!SSPIF);
+   SSPIF = 0;
+   
+   SSPBUF = 0x80;
+   while(!SSPIF);
+   SSPIF = 0;
+   temp = (int16)(SSPBUF&0x0f)<<8;
+
+   SSPBUF = 0x00;
+   while(!SSPIF);
+   SSPIF = 0;
+   temp = temp|(SSPBUF&0xFF);
+   
+   TS_CS = 1;
+   
+   TRIS_Xp=1; TRIS_Xm=1;
+   return temp;
+}
+
+//==============================================================================
+// Read MCP ch1(Y val)
+//==============================================================================
+int16 Read_Y(void)
+{
+   int16 temp;
+   
+   TRIS_Yp=0; TRIS_Ym=0;
+   Yp=1;      Ym=0;
+
+   TFT_CS=1;
+   TS_CS = 0;
+   SSPBUF = 0x01;
+   while(!SSPIF);
+   SSPIF = 0;
+   SSPBUF = 0xC0;
+   while(!SSPIF);
+   SSPIF = 0;
+   temp = (int16)(SSPBUF&0x0f)<<8;
+
+   SSPBUF = 0x00;
+   while(!SSPIF);
+   SSPIF = 0;
+   temp = temp|(SSPBUF&0xFF);
+   
+   TS_CS = 1;
+   TRIS_Yp=1; TRIS_Ym=1;
+   return temp;
+}
+
+
+
+//==============================================================================
+// make touch value to 320X240 Size.
+//==============================================================================
+float x0=0.;
+float y0=63.;
+float x240=3022.;
+float y320=3295.;
+
+unsigned int16 convert_X(unsigned int16 X)
+{
+   unsigned int16 pix_X;
+   if(X<x0)
+      X=0;
+   else
+      X=X-x0;
+   pix_X = (TFT_W/(x240-x0))*X; //2793
+
+   return pix_X;
+}
+//==============================================================================
+
+unsigned int16 convert_Y(unsigned int16 Y)
+{
+   unsigned int16 pix_Y;
+   if(Y<y0)
+      Y=0;
+   else
+      Y=Y-y0;
+   pix_Y = (TFT_H/(y320-y0))*Y; //2954
+
+   return pix_Y;
+}
+//==============================================================================
+// Saving touch value for SMPLSIZE. and make averrage value.
+// don't using maximum & minimum value.
+//==============================================================================
+signed int16 get_touch_Xval(signed int16* X_val)
+{
+   int8 i,j;
+   signed int16 temp,sumX;
+   for(i=0;i<SMPLSIZE;i++)
+   {
+      X_val[i]=convert_X(Read_X());
+      if(i>0)
+      {
+         if(((X_val[i]-X_val[i-1])>5)  ||  (-5>(X_val[i-1]-X_val[i])))
+            i=-1;
+      }
+   }
+   for(i=0;i<(SMPLSIZE-1);i++)
+   {
+      for(j=i+1;j<SMPLSIZE;j++)
+      {
+         if(*(X_val+i) > *(X_val+j))
+         {
+            temp = *(X_val+i);
+            *(X_val+i) = *(X_val+j);
+            *(X_val+j) = temp;
+         }
+      }
+   }
+   sumX=0;
+   for(i=1;i<(SMPLSIZE-1);i++)
+   {
+      sumX+=X_val[i];
+   }
+   sumX=sumX/(SMPLSIZE-2);
+   
+   return sumX;
+}
+//==============================================================================
+
+signed int16 get_touch_Yval(signed int16* Y_val)
+{
+   int8 i,j;
+   signed int16 temp,sumY;
+   for(i=0;i<SMPLSIZE;i++)
+   {
+      Y_val[i]=convert_Y(Read_Y());
+      if(i>0)
+      {
+         if(  (  (Y_val[i]-Y_val[i-1]) > 5)  ||  ( -5 > (Y_val[i-1]-Y_val[i])  )  )
+            i=-1;
+      }
+   }
+   for(i=0;i<(SMPLSIZE-1);i++)
+   {
+      for(j=i+1;j<SMPLSIZE;j++)
+      {
+         if(*(Y_val+i) > *(Y_val+j))
+         {
+            temp = *(Y_val+i);
+            *(Y_val+i) = *(Y_val+j);
+            *(Y_val+j) = temp;
+         }
+      }
+   }
+   sumY=0;
+   for(i=1;i<(SMPLSIZE-1);i++)
+   {
+      sumY+=Y_val[i];
+   }
+   sumY=sumY/(SMPLSIZE-2);
+   
+   return sumY;
+}

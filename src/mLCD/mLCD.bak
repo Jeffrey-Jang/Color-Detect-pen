@@ -1,0 +1,126 @@
+#include <18F452.h>
+#fuses NOWDT, HS, NOLVP
+#device *=16 adc=10
+#include <stdlib.h>
+#include "user_bootloader.h"
+#include "mTFT.h"
+#include "mTFT.c"
+#use delay(clock=20000000)
+#use RS232(baud=9600, parity=N, xmit=PIN_C6, rcv=PIN_C7)
+
+#byte PORTB=0xF81
+#byte TRISB=0xF93
+
+#byte INTCON=0xFF2
+#byte INTCON2=0xFF1
+#byte PIE1=0xF9D
+#byte PIR1 = 0xf9e
+#bit GIE=INTCON.7
+
+#byte RCREG=0xFAE
+#byte TXSTA=0xFAC
+#byte TXREG=0xFAD
+#byte RCSTA=0xFAB
+#byte SPBRG=0xFAF
+#bit TRIS_RX=TRISC.7
+#bit TRIS_TX=TRISC.6
+
+unsigned int16 X_val[SMPLSIZE];
+unsigned int16 Y_val[SMPLSIZE];
+unsigned int16 color;
+
+char rcv_data=0;
+char arr[6];
+char cnt=0;
+
+#int_ext
+void ext_isr(){
+   SSPSTAT = 0b00000000;      // 0 = Data transmitted on rising edge of SCK
+   SSPCON1 = 0b00110001;      // 1 = Enables, 1 = IDLE state for clock is a high level,FOSC/16
+   SSPIF = 0;                 //spi crashed mcp3202 & TFTLCD. so must be reset spi
+   TFT_Box(0, 0, 240, 279, BLACK);
+}
+
+#int_rda
+void rda_isr(){
+   rcv_data=RCREG;
+   color = color<<8;
+   color += rcv_data;
+}
+
+void uart_init(void){
+   TRIS_RX=1;  TRIS_TX=0;
+   TXSTA=0xa4;//10100100
+   RCSTA=0x90;//10010000
+   SPBRG=0x81;//10000001
+   INTCON=0xc0;//11000000
+   PIE1=PIE1|0x20;//00100000
+}
+void init_spi(void)
+{
+   TRIS_SDO = 0; TRIS_SDI = 1; TRIS_SCK = 0;
+   SSPCON1 &=0xDF;
+   SSPSTAT &= 0x3F;                // power on state 
+   SSPCON1 = 0x00;                 // power on state
+
+   SSPSTAT = 0b00000000;           // 0 = Data transmitted on rising edge of SCK
+   SSPCON1 = 0b00110001;           // 1 = Enables, 1 = IDLE state for clock is a high level,FOSC/16
+   SSPIF = 0;
+}
+
+void init_ext0(void)
+{
+   TRISB  = 0x01;
+   INTCON=INTCON|0x10;     //1 = Enables the INT0 external interrupt
+   INTCON2=INTCON2&0xBF;   //0 = Interrupt on falling edge
+   GIE=1;
+}
+void paint_layout(void)
+{
+   TFT_FillScreen(BLACK);
+   TFT_Line(0, 279, 240, 279, GRAY2); 
+   TFT_Box(40, 280, 80, 319, WHITE); 
+   TFT_Box(80, 280, 120, 319, BRIGHTRED); 
+   TFT_Box(120, 280, 160, 319, BRIGHTGREEN); 
+   TFT_Box(160, 280, 200, 319, BRIGHTBLUE); 
+   TFT_Box(200, 280, 240, 319, BRIGHTYELLOW); 
+}
+void main(){
+   unsigned int16 x, y;
+   
+   PORTC  = 0;   PORTD  = 0;   PORTB  = 0;
+   TRISC  = 0;   TRISD  = 0;   TRISB  = 0;
+   
+   init_spi();
+   touch_init();
+   TFT_Init();
+   uart_init();
+   init_ext0();
+
+   paint_layout();
+   
+   color=WHITE;
+   while(1){
+      x=get_touch_Xval(X_val);
+      y=get_touch_Yval(Y_val);
+
+      if((x<3)||(y<3)||((y>275)&&(y<280)))
+         color = color;
+      else if((x<41)&&(y>279))
+         color = BLACK;
+      else if((x<81)&&(y>279))
+         color = WHITE;
+      else if((x<121)&&(y>279))
+         color = BRIGHTRED;
+      else if((x<161)&&(y>279))
+         color = BRIGHTGREEN;
+      else if((x<201)&&(y>279))
+         color = BRIGHTBLUE;
+      else if((x<240)&&(y>279))
+         color = BRIGHTYELLOW;
+      else  {
+         init_spi();
+         TFT_Circle(x, y, 3,1, color);
+      }
+   }
+}

@@ -1,0 +1,21 @@
+>>> Warning 205 "D:\PIC\LCD\mLCD\mTFT.c" Line 332(1,1): Unsigned variable is never less than zero
+>>> Warning 204 "D:\PIC\LCD\mLCD\mTFT.c" Line 332(1,1): Condition always FALSE
+>>> Warning 205 "D:\PIC\LCD\mLCD\mTFT.c" Line 333(1,1): Unsigned variable is never less than zero
+>>> Warning 204 "D:\PIC\LCD\mLCD\mTFT.c" Line 333(1,1): Condition always FALSE
+>>> Warning 205 "D:\PIC\LCD\mLCD\mTFT.c" Line 334(1,1): Unsigned variable is never less than zero
+>>> Warning 204 "D:\PIC\LCD\mLCD\mTFT.c" Line 334(1,1): Condition always FALSE
+>>> Warning 205 "D:\PIC\LCD\mLCD\mTFT.c" Line 335(1,1): Unsigned variable is never less than zero
+>>> Warning 204 "D:\PIC\LCD\mLCD\mTFT.c" Line 335(1,1): Condition always FALSE
+>>> Warning 205 "D:\PIC\LCD\mLCD\mTFT.c" Line 336(1,1): Unsigned variable is never less than zero
+>>> Warning 204 "D:\PIC\LCD\mLCD\mTFT.c" Line 336(1,1): Condition always FALSE
+>>> Warning 205 "D:\PIC\LCD\mLCD\mTFT.c" Line 343(1,1): Unsigned variable is never less than zero
+>>> Warning 204 "D:\PIC\LCD\mLCD\mTFT.c" Line 343(1,1): Condition always FALSE
+>>> Warning 203 "D:\PIC\LCD\mLCD\mTFT.c" Line 421(1,1): Condition always TRUE
+>>> Warning 203 "mLCD.c" Line 136(1,1): Condition always TRUE
+>>> Warning 216 "mLCD.c" Line 161(0,1): Interrupts disabled during call to prevent re-entrancy:  (TFT_ColumnPage)
+>>> Warning 216 "mLCD.c" Line 161(0,1): Interrupts disabled during call to prevent re-entrancy:  (TFT_WriteParameter)
+>>> Warning 216 "mLCD.c" Line 161(0,1): Interrupts disabled during call to prevent re-entrancy:  (TFT_WriteCommand)
+>>> Warning 216 "mLCD.c" Line 161(0,1): Interrupts disabled during call to prevent re-entrancy:  (TFT_Box)
+      Memory usage:   ROM=27%      RAM=7% - 13%
+      0 Errors,  18 Warnings.
+Build Successful.

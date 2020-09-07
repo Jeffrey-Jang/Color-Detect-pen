@@ -1,0 +1,348 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     @INTERRUPT_AREA
+005     @INTERRUPT_AREA
+006     @INTERRUPT_AREA
+007     @INTERRUPT_AREA
+008     @INTERRUPT_AREA
+009     @INTERRUPT_AREA
+00A     @INTERRUPT_AREA
+00B     @INTERRUPT_AREA
+00C     @INTERRUPT_AREA
+00D     @INTERRUPT_AREA
+00E     @INTERRUPT_AREA
+00F     @INTERRUPT_AREA
+010     @INTERRUPT_AREA
+011     @INTERRUPT_AREA
+012     @INTERRUPT_AREA
+013     @INTERRUPT_AREA
+014     @INTERRUPT_AREA
+015     @INTERRUPT_AREA
+016     @INTERRUPT_AREA
+017     @INTERRUPT_AREA
+018     @INTERRUPT_AREA
+019     @INTERRUPT_AREA
+01A-01B strtok.save
+01C-01F _Randseed
+020-023 x0
+024-027 y0
+028-02B x240
+02C-02F y320
+030-043 X_val
+044-057 Y_val
+058-059 color
+05A     rcv_data
+05B-060 arr
+061     cnt
+062-065 atan2.y
+062-063 MAIN.x
+064-065 MAIN.y
+066-069 atan2.x
+066-067 get_touch_Xval.X_val
+066     TFT_Delay.i
+066-067 get_touch_Yval.Y_val
+066-067 TFT_Circle.SX
+066-067 TFT_FillScreen.color
+067     @delay_ms1.P1
+068     get_touch_Xval.i
+068     get_touch_Yval.i
+068     TFT_FillScreen.DH
+068-069 TFT_Circle.SY
+069     get_touch_Xval.j
+069     get_touch_Yval.j
+069     TFT_FillScreen.DL
+06A-06D atan2.z
+06A-06B get_touch_Xval.temp
+06A-06B TFT_Circle.Radius
+06A-06B TFT_FillScreen.i
+06A-06B get_touch_Yval.temp
+06C-06D get_touch_Yval.sumY
+06C-06D TFT_Circle.Fill
+06C-06D get_touch_Xval.sumX
+06C-06D TFT_FillScreen.j
+06E-06F @DIVS1616.P1
+06E.0   atan2.sign
+06E-06F TFT_Circle.color
+06E     get_touch_Xval.@SCRATCH1
+06E     get_touch_Yval.@SCRATCH1
+06F     atan2.quad
+06F     get_touch_Xval.@SCRATCH2
+06F     get_touch_Yval.@SCRATCH2
+070-071 Read_X.temp
+070-071 TFT_Circle.x
+070-071 Read_Y.temp
+070-071 @DIVS1616.P1
+070     get_touch_Xval.@SCRATCH3
+070     get_touch_Yval.@SCRATCH3
+071     get_touch_Xval.@SCRATCH4
+071     get_touch_Yval.@SCRATCH4
+072-073 convert_X.x
+072-073 TFT_Circle.y
+072-073 convert_Y.y
+072     @DIVS1616.@SCRATCH1
+072     Read_X.@SCRATCH1
+072     Read_Y.@SCRATCH1
+073     @DIVS1616.@SCRATCH2
+073     Read_X.@SCRATCH2
+073     Read_Y.@SCRATCH2
+074-075 TFT_Circle.delta
+074-075 convert_X.pix_X
+074-075 convert_Y.pix_Y
+076-077 TFT_Circle.tmp
+076     convert_X.@SCRATCH1
+076     convert_Y.@SCRATCH1
+077     convert_X.@SCRATCH2
+077     convert_Y.@SCRATCH2
+078-07B @SFTOI.P1
+078     TFT_Circle.@SCRATCH1
+078     convert_X.@SCRATCH3
+078     convert_Y.@SCRATCH3
+079     TFT_Circle.@SCRATCH2
+079     convert_X.@SCRATCH4
+079     convert_Y.@SCRATCH4
+07A-07B @MUL1616.P1
+07A-07B @ITOF.P2
+07A-07D @MULFF.P3
+07A     TFT_Circle.@SCRATCH3
+07B     TFT_Circle.@SCRATCH4
+07C-07F sqrt.x
+07C-07D @MUL1616.P1
+07C     TFT_Circle.@SCRATCH5
+07D     TFT_Circle.@SCRATCH6
+07E-081 @MULFF.P1
+07E     @MUL1616.@SCRATCH1
+07E     TFT_Circle.@SCRATCH7
+07F     TFT_Circle.@SCRATCH8
+080-083 sqrt.y
+080-081 TFT_Line.x1
+082-083 TFT_Line.y1
+082     @MULFF.@SCRATCH1
+083     @MULFF.@SCRATCH2
+084-087 sqrt.res
+084-085 TFT_Line.x2
+084     @MULFF.@SCRATCH3
+086-087 TFT_Line.y2
+088-089 TFT_Line.color
+088-089 sqrt.p
+08A-08B TFT_Line.i
+08A-08D @DIVFF.P1
+08A-08D @ADDFF.P2
+08A-08D @FLT.P3
+08A     sqrt.@SCRATCH1
+08B     sqrt.@SCRATCH2
+08C-08D TFT_Line.longest
+08C     sqrt.@SCRATCH3
+08D     sqrt.@SCRATCH4
+08E-091 @FLT.P1
+08E-08F TFT_Line.shortest
+08E-091 @ADDFF.P1
+08E-091 @DIVFF.P2
+090-091 TFT_Line.numerator
+092-093 TFT_Line.w
+092     @ADDFF.@SCRATCH1
+092     @DIVFF.@SCRATCH1
+092     @FLT.@SCRATCH1
+093     @ADDFF.@SCRATCH2
+093     @DIVFF.@SCRATCH2
+093     @FLT.@SCRATCH2
+094-095 TFT_Line.h
+094     @ADDFF.@SCRATCH3
+094     @DIVFF.@SCRATCH3
+095     @ADDFF.@SCRATCH4
+095     @DIVFF.@SCRATCH4
+096-097 TFT_Line.dx1
+096     @ADDFF.@SCRATCH5
+096     @DIVFF.@SCRATCH5
+097     @ADDFF.@SCRATCH6
+097     @DIVFF.@SCRATCH6
+098-099 TFT_Line.dy1
+098     @ADDFF.@SCRATCH7
+099     @ADDFF.@SCRATCH8
+09A-09B TFT_Line.dx2
+09C-09D TFT_Line.dy2
+09E-09F TFT_Pixel.x
+0A0-0A1 TFT_Pixel.y
+0A2-0A3 TFT_Pixel.color
+0A4-0A5 TFT_ColumnRow.x
+0A4     TFT_Pixel.@SCRATCH1
+0A5     TFT_Pixel.@SCRATCH2
+0A6-0A7 TFT_ColumnRow.y
+0A8     TFT_ColumnRow.@SCRATCH1
+0A9     TFT_ColumnRow.@SCRATCH2
+0AD-0AE TFT_Box.x1
+0AD     rda_isr.@SCRATCH1
+0AE     rda_isr.@SCRATCH2
+0AF-0B0 TFT_Box.y1
+0B1-0B2 TFT_Box.x2
+0B3-0B4 TFT_Box.y2
+0B5-0B6 TFT_Box.color
+0B7     TFT_Box.DH
+0B8     TFT_Box.DL
+0B9-0BA TFT_Box.i
+0BB-0BC TFT_Box.j
+0BD-0BE TFT_Box.Box_W
+0BF-0C0 TFT_Box.Box_H
+0C1-0C2 TFT_ColumnPage.x1
+0C3-0C4 TFT_ColumnPage.x2
+0C5-0C6 TFT_ColumnPage.y1
+0C7-0C8 TFT_ColumnPage.y2
+0C9     TFT_WriteCommand.command
+0C9     TFT_ColumnPage.@SCRATCH1
+0CA     TFT_ColumnPage.@SCRATCH2
+0CB     TFT_WriteParameter.parameter
+0CC     WriteSPI.data_out
+0CD     WriteSPI.TempVar
+F81     PORTB
+F82     PORTC
+F82.3   SCK
+F82.4   SDI
+F82.5   SDO
+F83     PSP_DATA
+F83.0   TFT_CS
+F83     PORTD
+F83.1   TFT_RES
+F83.2   TFT_DC
+F83.3   TS_CS
+F83.4   Xm
+F83.5   Ym
+F83.6   Xp
+F83.7   Yp
+F93     TRISB
+F94     TRISC
+F94.3   TRIS_SCK
+F94.4   TRIS_SDI
+F94.5   TRIS_SDO
+F94.6   TRIS_TX
+F94.7   TRIS_RX
+F95.0   TRIS_CS
+F95     TRISD
+F95.1   TRIS_RES
+F95.2   TRIS_DC
+F95.3   TRIS_TS_CS
+F95.4   TRIS_Xm
+F95.5   TRIS_Ym
+F95.6   TRIS_Xp
+F95.7   TRIS_Yp
+F9D     PIE1
+F9E     PIR1
+F9E.3   SSPIF
+FAB     RCSTA
+FAC     TXSTA
+FAD     TXREG
+FAE     RCREG
+FAF     SSPBRG
+FAF     SPBRG
+FBB     CCP_2
+FBB     CCP_2_LOW
+FBC     CCP_2_HIGH
+FBE     CCP_1_LOW
+FBE     CCP_1
+FBF     CCP_1_HIGH
+FC5     SSPCON2
+FC6     SSPCON1
+FC6.3   WCOL
+FC7     SSPSTAT
+FC8     SSPADD
+FC9     SSPBUF
+FE1-FE2 @READ_PACKED_MEMORY.P1
+FE1-FE2 @WRITE_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PACKED_MEMORY.P1
+FE9-FEA @WRITE_PROGRAM_MEMORY.P2
+FE9-FEA @READ_PACKED_MEMORY.P3
+FE9-FEA @READ_PROGRAM_MEMORY.P4
+FF1     INTCON2
+FF2     INTCON
+FF2.7   GIE
+FF6-FF8 @READ_PROGRAM_MEMORY.P1
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+1698  @DIVS1616
+1486  @MULFF
+0FDE  @ITOF
+108A  @ADDFF
+132C  @DIVFF
+1CFA  @MUL1616
+0000  bootloader
+1014  @FLT
+12F4  @SFTOI
+1D18  sqrt
+0524  @delay_ms1
+02BA  WriteSPI
+05F6  TFT_Init
+0560  TFT_Reset
+054C  TFT_Delay
+02DC  TFT_WriteCommand
+02F0  TFT_WriteParameter
+0574  TFT_FillScreen
+0C04  TFT_ColumnRow
+0304  TFT_ColumnPage
+0D14  TFT_Pixel
+0378  TFT_Box
+0D5C  TFT_Line
+1E2C  TFT_Circle
+0514  touch_init
+0F98  Read_X
+194A  Read_Y
+1578  convert_X
+1990  convert_Y
+170C  get_touch_Xval
+1ABC  get_touch_Yval
+03F4  ext_isr
+041E  rda_isr
+0BDC  uart_init
+04FC  init_spi
+0BF6  init_ext0
+0E6E  paint_layout
+222C  MAIN
+222C  @cinit1
+227E  @cinit2
+0136  StrtoulGO
+0136  StrtolGO
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    D:\PIC\LCD\mLCD\
+
+Project Files:
+    mLCD.c                                                  [14-12-15 20:18  CRC=7C5B2478]
+    C:\Program Files (x86)\PICC\devices\18F452.h            [28-2-12 13:44  CRC=B966D23F]
+    C:\Program Files (x86)\PICC\drivers\stdlib.h            [08-6-11 14:39  CRC=0B6669CF]
+    C:\Program Files (x86)\PICC\drivers\stddef.h            [16-7-10 09:27  CRC=897CEC6C]
+    C:\Program Files (x86)\PICC\drivers\string.h            [14-7-11 10:13  CRC=23EDEC8F]
+    C:\Program Files (x86)\PICC\drivers\ctype.h             [03-1-08 13:55  CRC=2D1F019F]
+    user_bootloader.h                                       [07-7-15 20:32  CRC=B96F2DBD]
+    mTFT.h                                                  [03-12-15 21:20  CRC=711DF0EF]
+    mTFT.c                                                  [09-12-15 17:04  CRC=EEC15821]
+    C:\Program Files (x86)\PICC\drivers\math.h              [13-6-11 12:45  CRC=56D86DB6]
+
+Source signature=E2B18D59
+
+Units:
+    mLCD (main)
+
+Compiler Settings:
+    Processor:      PIC18F452
+    Pointer Size:   16
+    ADC Range:      0-1023
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      mLCD.err
+    Ext Symbols: mLCD.esym
+    INHX32:      mLCD.hex
+    Symbols:     mLCD.sym
+    List:        mLCD.lst
+    Debug/COFF:  mLCD.cof
+    Project:     mLCD.PJT
+    Call Tree:   mLCD.tre
+    Statistics:  mLCD.STA
